@@ -8,3 +8,5 @@ add_library(
     usbhost
     src/usbhost.c
 )
+
+target_link_libraries(usbhost pthread)
