@@ -3,11 +3,11 @@ mtp-server
 
 Summary
 -------
-The mediaindexer service component.
+The mtp server implementation.
 
 Description
 -----------
-A port of Android's mtp server implementation to Ubuntu.
+A port of Android's mtp server implementation to webOS ports.
 
 The whole code is based on the mtp project from the Ubuntu guys (see
 https://launchpad.net/mtp).
