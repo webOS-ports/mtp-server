@@ -5,6 +5,7 @@ Requires=android-system.service
 [Service]
 Type=simple
 Restart=on-failure
+Environment="GLOG_logtostderr=1"
 ExecStart=/usr/bin/mtp-server
 StandardOutput=null
 
