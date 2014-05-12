@@ -1,0 +1,84 @@
+mtp (0.0.3+14.04.20140409-0ubuntu1) trusty; urgency=medium
+
+  [ Mathieu Trudel-Lapierre ]
+  * New release:
+    - Do better logging; with logging levels for verbosity.
+    - Listen to inotify events to know about changes happening on the
+      filesystem but not initiated by the MTP protocol.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 09 Apr 2014 03:00:23 +0000
+
+mtp (0.0.2+14.04.20140307-0ubuntu1) trusty; urgency=low
+
+  [ Oliver Grawert ]
+  * Fix the installation of the mtp-state.conf upstart job file
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 07 Mar 2014 19:40:09 +0000
+
+mtp (0.0.2+14.04.20131205-0ubuntu2) trusty; urgency=medium
+
+  * add mtp-state upstart job to monitor persist.sys.usb.config for mtp setup
+  * do not stop mtp-server on usb disconnect else re-plugging produces even more
+    races
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 07 Mar 2014 14:21:07 +0100
+
+mtp (0.0.2+14.04.20131205-0ubuntu1) trusty; urgency=low
+
+  [ Mathieu Trudel-Lapierre ]
+  * New release.
+
+  [ Sergio Schvezov ]
+  * Enabling/disabling mtp by tracking the cable state.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 37
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 05 Dec 2013 07:38:37 +0000
+
+mtp (0.0.1+13.10.20130926.3-0ubuntu2) trusty; urgency=low
+
+  * No change rebuild for Boost 1.54 transition.
+
+ -- Dmitrijs Ledkovs <xnox@ubuntu.com>  Tue, 22 Oct 2013 18:08:40 +0100
+
+mtp (0.0.1+13.10.20130926.3-0ubuntu1) saucy; urgency=low
+
+  [ Stéphane Graber ]
+  * Fix upstart jobs. The system job was marked as task but wasn't a
+    task and was therefore keeping lxc-android-config in post-start. The
+    user job was working fine, but was backgrounding the process on the exec
+    line instead of just letting upstart track it directly.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 33
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 26 Sep 2013 22:02:01 +0000
+
+mtp (0.0.1+13.10.20130918-0ubuntu1) saucy; urgency=low
+
+  [ Oliver Grawert ]
+  * fix property handling so existing property settings are respected and mtp
+    is only added/removed to/from the set
+  * make sure we disable mtp on the usb gadget driver during shutdown so gvfsd
+    on the host doesnt spill errors when the phone is rebooted because there is
+    a mtp device but no server attached to it (LP: #1226825).
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 31
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 18 Sep 2013 14:38:45 +0000
+
+mtp (0.0.1+13.10.20130913-0ubuntu1) saucy; urgency=low
+
+  [ Mathieu Trudel-Lapierre ]
+  * Initial release
+  * Automatic snapshot from revision 27 (bootstrap)
+  * Relicense our code to GPL-3.
+  * Expose only Music, Videos, Pictures, Downloads and Documents, plus
+    set the name of the device storage to the device model.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 29
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 13 Sep 2013 19:59:55 +0000
