@@ -40,7 +40,7 @@ struct FileSystemConfig
     static const int directory_perm = 0755;
 };
 
-android::MtpStorage* home_storage;
+android::MtpStorage* internal_storage;
 
 }
 
@@ -72,15 +72,15 @@ int main(int argc, char** argv)
 
     property_get ("ro.product.model", product_name, "Ubuntu Touch device");
 
-    home_storage = new android::MtpStorage(
+    internal_storage = new android::MtpStorage(
         MTP_STORAGE_FIXED_RAM, 
         "/media/internal",
-	product_name,
+        product_name,
         1024 * 1024 * 100,  /* 100 MB reserved space, to avoid filling the disk */
         false,
         1024 * 1024 * 1024 * 2  /* 2GB arbitrary max file size */);
 
-    server->addStorage(home_storage);
+    server->addStorage(internal_storage);
     server->run();
 
     /*

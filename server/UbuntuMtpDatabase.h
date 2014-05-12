@@ -121,6 +121,12 @@ private:
         counter++;
 
         if (is_directory(p)) {
+            std::string name = p.filename().string();
+
+            // we don't want to expose some parts
+            if (name == ".cryptofs" || name == ".sysservice")
+                return;
+
             entry.storage_id = MTP_STORAGE_FIXED_RAM;
             entry.parent = parent;
             entry.display_name = std::string(p.filename().string());
@@ -128,6 +134,8 @@ private:
             entry.object_format = MTP_FORMAT_ASSOCIATION;
             entry.object_size = 0;
             entry.watch_fd = setup_dir_inotify(p);
+
+            VLOG(1) << "Adding \"" << p.string() << "\"";
 
             db.insert( std::pair<MtpObjectHandle, DbEntry>(handle, entry) );
 
@@ -173,6 +181,7 @@ private:
     void readFiles(const std::string& sourcedir)
     {
         path p (sourcedir);
+
 	DbEntry entry;
 	MtpObjectHandle handle = counter++;
 
@@ -291,7 +300,7 @@ public:
         notifier_thread = boost::thread(&UbuntuMtpDatabase::read_more_notify,
                                        this);
 
-	readFiles(basedir + "/");
+	parse_directory(basedir, MTP_PARENT_ROOT);
 
         LOG(INFO) << "Added " << counter << " entries to the database.";
 
