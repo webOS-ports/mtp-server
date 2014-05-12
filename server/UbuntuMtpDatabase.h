@@ -291,11 +291,7 @@ public:
         notifier_thread = boost::thread(&UbuntuMtpDatabase::read_more_notify,
                                        this);
 
-	readFiles(basedir + "/Documents");
-	readFiles(basedir + "/Music");
-	readFiles(basedir + "/Videos");
-	readFiles(basedir + "/Pictures");
-	readFiles(basedir + "/Downloads");
+	readFiles(basedir + "/");
 
         LOG(INFO) << "Added " << counter << " entries to the database.";
 

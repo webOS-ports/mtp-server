@@ -63,7 +63,7 @@ int main(int argc, char** argv)
     {
         new android::MtpServer(
             fd, 
-            new android::UbuntuMtpDatabase(userdata->pw_dir),
+            new android::UbuntuMtpDatabase("/media/internal"),
             false, 
             userdata->pw_gid, 
             FileSystemConfig::file_perm, 
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
     home_storage = new android::MtpStorage(
         MTP_STORAGE_FIXED_RAM, 
-        userdata->pw_dir,
+        "/media/internal",
 	product_name,
         1024 * 1024 * 100,  /* 100 MB reserved space, to avoid filling the disk */
         false,
