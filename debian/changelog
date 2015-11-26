@@ -1,8 +1,12 @@
-mtp (0.0.4+15.04.20150219-0ubuntu3) UNRELEASED; urgency=medium
+mtp (0.0.4+15.04.20151126-0ubuntu1) vivid; urgency=medium
 
+  [ Thomas Voß ]
   * Force rebuild against dbus-cpp. 
 
- -- Thomas Voß <thomas.voss@canonical.com>  Tue, 17 Nov 2015 09:30:14 +0100
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+ -- Thomas Voß <ci-train-bot@canonical.com>  Thu, 26 Nov 2015 07:32:27 +0000
 
 mtp (0.0.4+15.04.20150219-0ubuntu2) vivid; urgency=medium
 
