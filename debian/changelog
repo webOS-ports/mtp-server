@@ -1,3 +1,9 @@
+mtp (0.0.4+15.04.20150219-0ubuntu3) UNRELEASED; urgency=medium
+
+  * Force rebuild against dbus-cpp. 
+
+ -- Thomas Voß <thomas.voss@canonical.com>  Tue, 17 Nov 2015 09:30:14 +0100
+
 mtp (0.0.4+15.04.20150219-0ubuntu2) vivid; urgency=medium
 
   * Properly fixing the startup script, as the previous change broke
