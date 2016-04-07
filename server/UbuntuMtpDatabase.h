@@ -676,7 +676,10 @@ public:
                 try {
                     entry = db.at(handle);
 
-                    packet.getString(buffer);
+                    if (!packet.getString(buffer)) {
+                        LOG(ERROR) << "Cannot read packet";
+                        return MTP_RESPONSE_GENERAL_ERROR;
+                    }
                     newname = strdup(buffer);
 
                     oldpath /= entry.path;
@@ -701,7 +704,10 @@ public:
             case MTP_PROPERTY_PARENT_OBJECT:
                 try {
                     entry = db.at(handle);
-                    entry.parent = packet.getUInt32();
+                    if (!packet.getUInt32(entry.parent)) {
+                        LOG(ERROR) << "Cannot read packet";
+                        return MTP_RESPONSE_GENERAL_ERROR;
+                    }
                 }
                 catch (...) {
                     LOG(ERROR) << "Could not change parent object for handle "
@@ -710,7 +716,7 @@ public:
                 }
             default: return MTP_RESPONSE_OPERATION_NOT_SUPPORTED; break;
         }
-        
+
         return MTP_RESPONSE_OK;
     }
 

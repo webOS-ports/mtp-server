@@ -108,6 +108,7 @@ public:
 
     void                sendObjectAdded(MtpObjectHandle handle);
     void                sendObjectRemoved(MtpObjectHandle handle);
+    void                sendDevicePropertyChanged(MtpDeviceProperty property);
     void                sendObjectInfoChanged(MtpObjectHandle handle);
     void                sendObjectPropChanged(MtpObjectHandle handle,
                                               MtpObjectProperty prop);
