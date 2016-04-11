@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define LOG_TAG "MtpServer"
 
@@ -809,7 +810,7 @@ MtpResponseCode MtpServer::doGetObject() {
         return result;
 
     mtp_file_range  mfr;
-    mfr.fd = open(pathBuf.c_str(), O_RDONLY);
+    mfr.fd = open(pathBuf.c_str(), O_RDONLY | O_LARGEFILE);
     if (mfr.fd < 0) {
         return MTP_RESPONSE_GENERAL_ERROR;
     }
@@ -887,7 +888,7 @@ MtpResponseCode MtpServer::doGetPartialObject(MtpOperationCode operation) {
         length = fileLength - offset;
 
     mtp_file_range  mfr;
-    mfr.fd = open(pathBuf.c_str(), O_RDONLY);
+    mfr.fd = open(pathBuf.c_str(), O_RDONLY | O_LARGEFILE);
     if (mfr.fd < 0) {
         return MTP_RESPONSE_GENERAL_ERROR;
     }
@@ -1041,7 +1042,9 @@ MtpResponseCode MtpServer::doSendObject() {
     initialData = ret - MTP_CONTAINER_HEADER_SIZE;
 
     mtp_file_range  mfr;
-    mfr.fd = open(mSendObjectFilePath.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    mfr.fd = open(mSendObjectFilePath.c_str(),
+                  O_RDWR | O_CREAT | O_TRUNC | O_LARGEFILE,
+                  S_IRUSR | S_IWUSR);
     if (mfr.fd < 0) {
         result = MTP_RESPONSE_GENERAL_ERROR;
         goto done;
@@ -1292,7 +1295,7 @@ MtpResponseCode MtpServer::doSendPartialObject() {
             if ((ret < 0) && (errno == ECANCELED)) {
                 isCanceled = true;
             }
-            VLOG(2) << "MTP_RECEIVE_FILE returned " << ret;
+            VLOG(2) << "MTP_RECEIVE_FILE returned " << ret << " errno " << errno;
         }
     }
     if (ret < 0) {
@@ -1350,7 +1353,7 @@ MtpResponseCode MtpServer::doBeginEditObject() {
     if (result != MTP_RESPONSE_OK)
         return result;
 
-    int fd = open(path.c_str(), O_RDWR | O_EXCL);
+    int fd = open(path.c_str(), O_RDWR | O_EXCL | O_LARGEFILE);
     if (fd < 0) {
         PLOG(ERROR) << "open failed for " << path.c_str() << " in doBeginEditObject";
         return MTP_RESPONSE_GENERAL_ERROR;

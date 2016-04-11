@@ -690,7 +690,7 @@ fail:
 // reads the object's data and writes it to the specified file path
 bool MtpDevice::readObject(MtpObjectHandle handle, const char* destPath, int group, int perm) {
     VLOG(2) << "readObject: " << destPath;
-    int fd = ::open(destPath, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    int fd = ::open(destPath, O_RDWR | O_CREAT | O_TRUNC | O_LARGEFILE, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         LOG(ERROR) << "open failed for " << destPath;
         return false;
