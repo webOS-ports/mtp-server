@@ -63,7 +63,7 @@ bool MtpDataPacket::getUInt8(uint8_t& value) {
 bool MtpDataPacket::getUInt16(uint16_t& value) {
     if (mPacketSize - mOffset < sizeof(value))
         return false;
-    int offset = mOffset;
+    size_t offset = mOffset;
     value = (uint16_t)mBuffer[offset] | ((uint16_t)mBuffer[offset + 1] << 8);
     mOffset += sizeof(value);
     return true;
@@ -72,7 +72,7 @@ bool MtpDataPacket::getUInt16(uint16_t& value) {
 bool MtpDataPacket::getUInt32(uint32_t& value) {
     if (mPacketSize - mOffset < sizeof(value))
         return false;
-    int offset = mOffset;
+    size_t offset = mOffset;
     value = (uint32_t)mBuffer[offset] | ((uint32_t)mBuffer[offset + 1] << 8) |
            ((uint32_t)mBuffer[offset + 2] << 16)  | ((uint32_t)mBuffer[offset + 3] << 24);
     mOffset += sizeof(value);
@@ -82,7 +82,7 @@ bool MtpDataPacket::getUInt32(uint32_t& value) {
 bool MtpDataPacket::getUInt64(uint64_t& value) {
     if (mPacketSize - mOffset < sizeof(value))
         return false;
-    int offset = mOffset;
+    size_t offset = mOffset;
     value = (uint64_t)mBuffer[offset] | ((uint64_t)mBuffer[offset + 1] << 8) |
            ((uint64_t)mBuffer[offset + 2] << 16) | ((uint64_t)mBuffer[offset + 3] << 24) |
            ((uint64_t)mBuffer[offset + 4] << 32) | ((uint64_t)mBuffer[offset + 5] << 40) |
