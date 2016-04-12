@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(UtilsFormatDateTime)
 {
     time_t seconds = 1378726903;
     char buffer[25];
-    char *expected = "20130909T114143";
+    const char *expected = "20130909T114143";
 
     setenv("TZ", "UTC", 1);
 
