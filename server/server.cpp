@@ -21,6 +21,7 @@
 #include <MtpStorage.h>
 
 #include <iostream>
+#include <stdint.h>
 
 #include <signal.h>
 #include <sys/types.h>
@@ -39,7 +40,7 @@
 #include <core/dbus/property.h>
 #include <core/dbus/service.h>
 #include <core/dbus/signal.h>
-    
+
 #include <core/dbus/asio/executor.h>
 #include <core/dbus/types/stl/tuple.h>
 #include <core/dbus/types/stl/vector.h>
@@ -76,23 +77,23 @@ struct UnityGreeter
 };
 }
 
-namespace core  
-{               
-namespace dbus      
-{               
+namespace core
+{
+namespace dbus
+{
 namespace traits
-{               
-template<>      
-struct Service<core::UnityGreeter> 
-{        
+{
+template<>
+struct Service<core::UnityGreeter>
+{
     inline static const std::string& interface_name()
     {
         static const std::string s
         {
             "com.canonical.UnityGreeter"
-        };      
+        };
         return s;
-    }               
+    }
 };
 }
 }
@@ -148,13 +149,14 @@ private:
     {
         static int storageID = MTP_STORAGE_REMOVABLE_RAM;
 
+        /* TODO check removable file system type to set maximum file size */
         MtpStorage *removable = new MtpStorage(
-            storageID, 
+            storageID,
             path,
             name,
             1024 * 1024 * 100,  /* 100 MB reserved space, to avoid filling the disk */
             true,
-            1024 * 1024 * 1024 * 2  /* 2GB arbitrary max file size */);
+            UINT64_C(4294967295)  /* 4GB-1, we assume vfat here */);
 
         storageID++;
 
@@ -195,15 +197,15 @@ private:
                          std::size_t transferred)
     {
         size_t processed = 0;
- 
+
         while(transferred - processed >= sizeof(inotify_event))
         {
             const char* cdata = processed + asio::buffer_cast<const char*>(buf.data());
             const inotify_event* ievent = reinterpret_cast<const inotify_event*>(cdata);
             path storage_path ("/media");
-     
+
             processed += sizeof(inotify_event) + ievent->len;
-     
+
             storage_path /= userdata->pw_name;
 
             if (ievent->len > 0 && ievent->mask & IN_CREATE)
@@ -277,11 +279,11 @@ public:
 
         // MTP server
         server = new MtpServer(
-                fd, 
+                fd,
                 mtp_database,
-                false, 
-                userdata->pw_gid, 
-                FileSystemConfig::file_perm, 
+                false,
+                userdata->pw_gid,
+                FileSystemConfig::file_perm,
                 FileSystemConfig::directory_perm);
 
         // security / screen locking
@@ -302,12 +304,12 @@ public:
         property_get ("ro.product.model", product_name, "Ubuntu Touch device");
 
         home_storage = new MtpStorage(
-            MTP_STORAGE_FIXED_RAM, 
+            MTP_STORAGE_FIXED_RAM,
             userdata->pw_dir,
 	    product_name,
             1024 * 1024 * 100,  /* 100 MB reserved space, to avoid filling the disk */
             false,
-            1024 * 1024 * 1024 * 2  /* 2GB arbitrary max file size */);
+            0  /* Do not check sizes for internal storage */);
         mtp_database->addStoragePath(std::string(userdata->pw_dir) + "/Documents",
                                      gettext("Documents"),
                                      MTP_STORAGE_FIXED_RAM, false);
@@ -424,7 +426,7 @@ int main(int argc, char** argv)
         LOG(ERROR) << "Error opening /dev/mtp_usb, aborting now...";
         return 1;
     }
- 
+
     try {
         MtpDaemon *d = new MtpDaemon(fd);
 

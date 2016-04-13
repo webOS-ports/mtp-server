@@ -7,7 +7,7 @@ include(GNUInstallDirs)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-add_definitions(-DMTP_DEVICE -DMTP_HOST)
+add_definitions(-DMTP_DEVICE -DMTP_HOST -D_FILE_OFFSET_BITS=64)
 
 set(MTP_VERSION_MAJOR 1)
 set(MTP_VERSION_MINOR 0)

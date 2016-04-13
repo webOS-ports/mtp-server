@@ -135,13 +135,22 @@ MtpDevice* MtpDevice::open(const char* deviceName, int fd) {
             struct usb_endpoint_descriptor *ep_in_desc = NULL;
             struct usb_endpoint_descriptor *ep_out_desc = NULL;
             struct usb_endpoint_descriptor *ep_intr_desc = NULL;
+            //USB3 add USB_DT_SS_ENDPOINT_COMP as companion descriptor;
+            struct usb_ss_ep_comp_descriptor *ep_ss_ep_comp_desc = NULL;
             for (int i = 0; i < 3; i++) {
                 ep = (struct usb_endpoint_descriptor *)usb_descriptor_iter_next(&iter);
+                if (ep && ep->bDescriptorType == USB_DT_SS_ENDPOINT_COMP) {
+                    VLOG(2) << "Descriptor type is USB_DT_SS_ENDPOINT_COMP for USB3 \n";
+                    ep_ss_ep_comp_desc = (usb_ss_ep_comp_descriptor*)ep;
+                    ep = (struct usb_endpoint_descriptor *)usb_descriptor_iter_next(&iter);
+                 }
+
                 if (!ep || ep->bDescriptorType != USB_DT_ENDPOINT) {
                     LOG(ERROR) << "endpoints not found";
                     usb_device_close(device);
                     return NULL;
                 }
+
                 if (ep->bmAttributes == USB_ENDPOINT_XFER_BULK) {
                     if (ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
                         ep_in_desc = ep;
@@ -199,7 +208,7 @@ MtpDevice::MtpDevice(struct usb_device* device, int interface,
 
 MtpDevice::~MtpDevice() {
     close();
-    for (int i = 0; i < mDeviceProperties.size(); i++)
+    for (size_t i = 0; i < mDeviceProperties.size(); i++)
         delete mDeviceProperties[i];
     usb_request_free(mRequestIn1);
     usb_request_free(mRequestIn2);
@@ -257,7 +266,7 @@ void MtpDevice::print() {
             VLOG(2) << "*** FORMAT: " << MtpDebug::getFormatCodeName(format);
             MtpObjectPropertyList* props = getObjectPropsSupported(format);
             if (props) {
-                for (int j = 0; j < props->size(); j++) {
+                for (size_t j = 0; j < props->size(); j++) {
                     MtpObjectProperty prop = (*props)[j];
                     MtpProperty* property = getObjectPropDesc(prop, format);
                     if (property) {
@@ -317,8 +326,10 @@ MtpDeviceInfo* MtpDevice::getDeviceInfo() {
     MtpResponseCode ret = readResponse();
     if (ret == MTP_RESPONSE_OK) {
         MtpDeviceInfo* info = new MtpDeviceInfo;
-        info->read(mData);
-        return info;
+        if (info->read(mData))
+            return info;
+        else
+            delete info;
     }
     return NULL;
 }
@@ -350,8 +361,10 @@ MtpStorageInfo* MtpDevice::getStorageInfo(MtpStorageID storageID) {
     MtpResponseCode ret = readResponse();
     if (ret == MTP_RESPONSE_OK) {
         MtpStorageInfo* info = new MtpStorageInfo(storageID);
-        info->read(mData);
-        return info;
+        if (info->read(mData))
+            return info;
+        else
+            delete info;
     }
     return NULL;
 }
@@ -389,8 +402,10 @@ MtpObjectInfo* MtpDevice::getObjectInfo(MtpObjectHandle handle) {
     MtpResponseCode ret = readResponse();
     if (ret == MTP_RESPONSE_OK) {
         MtpObjectInfo* info = new MtpObjectInfo(handle);
-        info->read(mData);
-        return info;
+        if (info->read(mData))
+            return info;
+        else
+            delete info;
     }
     return NULL;
 }
@@ -551,8 +566,10 @@ MtpProperty* MtpDevice::getDevicePropDesc(MtpDeviceProperty code) {
     MtpResponseCode ret = readResponse();
     if (ret == MTP_RESPONSE_OK) {
         MtpProperty* property = new MtpProperty;
-        property->read(mData);
-        return property;
+        if (property->read(mData))
+            return property;
+        else
+            delete property;
     }
     return NULL;
 }
@@ -570,15 +587,17 @@ MtpProperty* MtpDevice::getObjectPropDesc(MtpObjectProperty code, MtpObjectForma
     MtpResponseCode ret = readResponse();
     if (ret == MTP_RESPONSE_OK) {
         MtpProperty* property = new MtpProperty;
-        property->read(mData);
-        return property;
+        if (property->read(mData))
+            return property;
+        else
+            delete property;
     }
     return NULL;
 }
 
 bool MtpDevice::readObject(MtpObjectHandle handle,
         bool (* callback)(void* data, int offset, int length, void* clientData),
-        int objectSize, void* clientData) {
+        size_t objectSize, void* clientData) {
     MtpAutolock autoLock(mMutex);
     bool result = false;
 
@@ -671,7 +690,7 @@ fail:
 // reads the object's data and writes it to the specified file path
 bool MtpDevice::readObject(MtpObjectHandle handle, const char* destPath, int group, int perm) {
     VLOG(2) << "readObject: " << destPath;
-    int fd = ::open(destPath, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    int fd = ::open(destPath, O_RDWR | O_CREAT | O_TRUNC | O_LARGEFILE, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         LOG(ERROR) << "open failed for " << destPath;
         return false;
