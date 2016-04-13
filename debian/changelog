@@ -1,3 +1,12 @@
+mtp (0.0.4+16.04.20160413-0ubuntu1) xenial; urgency=medium
+
+  * Update to latest AOSP code (Marshallow) Make MTP work for file > 4GB
+    (LP: #1472789). This involved adding O_LARGEFILE flag when opening a
+    file (the flag is automatically added by bionic, but not by glibc)
+    and fixing parts of the MTP database implementation. (LP: #1472789)
+
+ -- Alfonso Sanchez-Beato <alfonso.sanchez-beato@canonical.com>  Wed, 13 Apr 2016 06:02:12 +0000
+
 mtp (0.0.4+15.04.20151126-0ubuntu1) vivid; urgency=medium
 
   [ Thomas Voß ]
