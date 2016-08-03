@@ -52,6 +52,8 @@ private:
     MtpSessionID        mSessionID;
     // true if we have an open session and mSessionID is valid
     bool                mSessionOpen;
+    // true if current session is going to close
+    bool                mSessionIsClosing;
 
     MtpRequestPacket    mRequest;
     MtpDataPacket       mData;

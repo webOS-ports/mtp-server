@@ -113,6 +113,7 @@ MtpServer::MtpServer(int fd, MtpDatabase* database, bool ptp,
         mDirectoryPermission(directoryPerm),
         mSessionID(0),
         mSessionOpen(false),
+        mSessionIsClosing(false),
         mSendObjectHandle(kInvalidObjectHandle),
         mSendObjectFormat(0),
         mSendObjectFileSize(0)
@@ -233,6 +234,9 @@ void MtpServer::run() {
         } else {
             VLOG(2) << "skipping response";
         }
+
+        if (mSessionIsClosing)
+            break;
     }
 
     // commit any open edits
@@ -522,6 +526,7 @@ MtpResponseCode MtpServer::doCloseSession() {
     mSessionID = 0;
     mSessionOpen = false;
     mDatabase->sessionEnded();
+    mSessionIsClosing = true;
     return MTP_RESPONSE_OK;
 }
 
