@@ -24,11 +24,13 @@
 #include "MtpRequestPacket.h"
 
 #include <usbhost/usbhost.h>
+#include <glog/logging.h>
 
 namespace android {
 
 MtpRequestPacket::MtpRequestPacket()
-    :   MtpPacket(512)
+    :   MtpPacket(512),
+        mParameterCount(0)
 {
 }
 
@@ -38,10 +40,21 @@ MtpRequestPacket::~MtpRequestPacket() {
 #ifdef MTP_DEVICE
 int MtpRequestPacket::read(int fd) {
     int ret = ::read(fd, mBuffer, mBufferSize);
-    if (ret >= 0)
+    if (ret < 0) {
+        // file read error
+        return ret;
+    }
+
+    // request packet should have 12 byte header followed by 0 to 5 32-bit arguments
+    if (ret >= MTP_CONTAINER_HEADER_SIZE
+            && ret <= MTP_CONTAINER_HEADER_SIZE + 5 * sizeof(uint32_t)
+            && ((ret - MTP_CONTAINER_HEADER_SIZE) & 3) == 0) {
         mPacketSize = ret;
-    else
-        mPacketSize = 0;
+        mParameterCount = (ret - MTP_CONTAINER_HEADER_SIZE) / sizeof(uint32_t);
+    } else {
+        PLOG(ERROR) << "Malformed MTP request packet";
+        ret = -1;
+    }
     return ret;
 }
 #endif
