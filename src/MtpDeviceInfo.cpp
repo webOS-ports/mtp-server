@@ -32,7 +32,7 @@ MtpDeviceInfo::MtpDeviceInfo()
         mVendorExtensionID(0),
         mVendorExtensionVersion(0),
         mVendorExtensionDesc(NULL),
-        mFunctionalCode(0),
+        mFunctionalMode(0),
         mOperations(NULL),
         mEvents(NULL),
         mDeviceProperties(NULL),
@@ -63,32 +63,39 @@ MtpDeviceInfo::~MtpDeviceInfo() {
         free(mSerial);
 }
 
-void MtpDeviceInfo::read(MtpDataPacket& packet) {
+bool MtpDeviceInfo::read(MtpDataPacket& packet) {
     MtpStringBuffer string;
 
     // read the device info
-    mStandardVersion = packet.getUInt16();
-    mVendorExtensionID = packet.getUInt32();
-    mVendorExtensionVersion = packet.getUInt16();
+    if (!packet.getUInt16(mStandardVersion)) return false;
+    if (!packet.getUInt32(mVendorExtensionID)) return false;
+    if (!packet.getUInt16(mVendorExtensionVersion)) return false;
 
-    packet.getString(string);
+    if (!packet.getString(string)) return false;
     mVendorExtensionDesc = strdup((const char *)string);
 
-    mFunctionalCode = packet.getUInt16();
+    if (!packet.getUInt16(mFunctionalMode)) return false;
     mOperations = packet.getAUInt16();
+    if (!mOperations) return false;
     mEvents = packet.getAUInt16();
+    if (!mEvents) return false;
     mDeviceProperties = packet.getAUInt16();
+    if (!mDeviceProperties) return false;
     mCaptureFormats = packet.getAUInt16();
+    if (!mCaptureFormats) return false;
     mPlaybackFormats = packet.getAUInt16();
+    if (!mCaptureFormats) return false;
 
-    packet.getString(string);
+    if (!packet.getString(string)) return false;
     mManufacturer = strdup((const char *)string);
-    packet.getString(string);
+    if (!packet.getString(string)) return false;
     mModel = strdup((const char *)string);
-    packet.getString(string);
+    if (!packet.getString(string)) return false;
     mVersion = strdup((const char *)string);
-    packet.getString(string);
+    if (!packet.getString(string)) return false;
     mSerial = strdup((const char *)string);
+
+    return true;
 }
 
 void MtpDeviceInfo::print() {
@@ -97,7 +104,7 @@ void MtpDeviceInfo::print() {
             << "\n\tmVendorExtensionID: " << mVendorExtensionID
             << "\n\tmVendorExtensionVersion: " << mVendorExtensionVersion
             << "\n\tmVendorExtensionDesc: " << mVendorExtensionDesc
-            << "\n\tmFunctionalCode: " << mFunctionalCode
+            << "\n\tmFunctionalCode: " << mFunctionalMode
             << "\n\tmManufacturer: " << mManufacturer
             << "\n\tmModel: " << mModel
             << "\n\tmVersion: " << mVersion

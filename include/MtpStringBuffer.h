@@ -19,6 +19,9 @@
 
 #include <stdint.h>
 
+// Max Character number of a MTP String
+#define MTP_STRING_MAX_CHARACTER_NUMBER             255
+
 namespace android {
 
 class MtpDataPacket;
@@ -29,7 +32,7 @@ class MtpStringBuffer {
 private:
     // mBuffer contains string in UTF8 format
     // maximum 3 bytes/character, with 1 extra for zero termination
-    uint8_t         mBuffer[255 * 3 + 1];
+    uint8_t         mBuffer[MTP_STRING_MAX_CHARACTER_NUMBER * 3 + 1];
     int             mCharCount;
     int             mByteCount;
 
@@ -43,7 +46,7 @@ public:
     void            set(const char* src);
     void            set(const uint16_t* src);
 
-    void            readFromPacket(MtpDataPacket* packet);
+    bool            readFromPacket(MtpDataPacket* packet);
     void            writeToPacket(MtpDataPacket* packet) const;
 
     inline int      getCharCount() const { return mCharCount; }
