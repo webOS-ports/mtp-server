@@ -16,7 +16,7 @@ target_link_libraries(
     ${Boost_thread_LIBRARIES}
     ${Boost_system_LIBRARIES}
     ${Boost_filesystem_LIBRARIES}
-    ${GLOG_LIBRARIES}
+    glog::glog
 )
 
 install(

@@ -14,7 +14,7 @@ set(MTP_VERSION_MINOR 0)
 set(MTP_VERSION_PATCH 0)
 
 find_package(Boost REQUIRED COMPONENTS thread system filesystem unit_test_framework)
-pkg_check_modules(GLOG REQUIRED libglog)
+find_package(glog 0.3.5 REQUIRED)
 
 set(
     MTP_HEADERS
@@ -70,7 +70,7 @@ add_library(
 target_link_libraries(
   mtpserver
   android-properties
-  ${GLOG_LIBRARIES}
+  glog::glog
 )
 
 set_target_properties(
