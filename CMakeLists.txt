@@ -16,6 +16,12 @@ set(MTP_VERSION_PATCH 0)
 find_package(Boost REQUIRED COMPONENTS thread system filesystem unit_test_framework)
 find_package(glog 0.3.5 REQUIRED)
 
+pkg_check_modules(ANDROID-PROPERTIES REQUIRED libandroid-properties)
+include_directories(${ANDROID-PROPERTIES_INCLUDE_DIRS})
+
+pkg_check_modules(ANDROID-HEADERS REQUIRED android-headers)
+include_directories(${ANDROID-HEADERS_INCLUDE_DIRS})
+
 set(
     MTP_HEADERS
     include/MtpDatabase.h
@@ -68,9 +74,15 @@ add_library(
 )
 
 target_link_libraries(
-  mtpserver
-  android-properties
-  glog::glog
+    mtpserver
+    ${ANDROID-PROPERTIES_LDFLAGS}
+    ${ANDROID-HEADERS_LDFLAGS}
+    glog::glog
+)
+target_compile_options(
+    mtpserver PRIVATE
+    ${ANDROID-PROPERTIES_CFLAGS_OTHER}
+    ${ANDROID-HEADERS_CFLAGS_OTHER}
 )
 
 set_target_properties(
